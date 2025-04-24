@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background-color: #020202;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .header a {
+            color: #fff;
+            margin: 0 15px;
+            text-decoration: none;
+            font-size: 1.2em;
+        }
+        .header a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h2 {
+            color: #333;
+        }
+        .buttons {
+            margin-top: 20px;
+        }
+        .buttons a, .buttons button {
+            background-color: #000000;
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-right: 10px;
+            border: none;
+        }
+        .buttons a:hover, .buttons button:hover {
+            background-color: #0c68cb;
+        }
+        .search-form {
+            margin-top: 20px;
+        }
+        .search-form input, .search-form button {
+            padding: 10px;
+            margin-right: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .search-form button {
+            background-color: #000000;
+            color: #fff;
+            border: none;
+        }
+        .search-form button:hover {
+            background-color: #000000;
+        }
+        .apartments {
+            margin-top: 20px;
+        }
+        .apartment {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+        .apartment img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        .apartment h3 {
+            margin-top: 10px;
+            color: #333;
+        }
+        .apartment .price {
+            margin-top: 5px;
+            color: #000000;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .apartment .description {
+            margin-top: 10px;
+            color: #555;
+        }
+        .apartment .address {
+            margin-top: 10px;
+            color: #555;
+            font-style: italic;
+        }
+        .apartment .book-button {
+            margin-top: 10px;
+            background-color: #000000;
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            align-self: flex-start;
+        }
+        .apartment .book-button:hover {
+            background-color: #0c68cb;
+        }
+        #map {
+            height: 400px;
+            width: 100%;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="#about">О нас</a>
+        <a href="#apartments">Наши апартаменты</a>
+        <a href="#contact">Контакты</a>
+    </div>
+    <div class="container">
+        {% if user.is_authenticated %}
+            <h2>Добро пожаловать, {{ user_name }}!</h2>
+            <div class="buttons">
+                <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Logout</button>
+                </form>
+            </div>
+        {% else %}
+            <h2>Добро пожаловать, гость!</h2>
+            <div class="buttons">
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'signup' %}">Sign Up</a>
+            </div>
+        {% endif %}
+
+        <div class="main-form">
+            <h3>Поиск жилья</h3>
+            <form id="search-form">
+                <input type="date" name="check_in" placeholder="Дата заезда" required>
+                <input type="date" name="check_out" placeholder="Дата выезда" required>
+                <input type="number" name="guests" placeholder="Количество гостей" min="1" required>
+                <input type="text" name="address" placeholder="Адрес" required>
+                <button type="submit">Поиск</button>
+            </form>
+        </div>
+
+        <div class="apartments" id="apartments">
+            <h3>Наши квартиры</h3>
+            <div class="apartment" data-address="ул. Ленина, д. 10" data-availability='["2023-10-01", "2023-10-10"]'>
+                <a href="https://gedcdn.gdeetotdom.ru/b/3d71c39b3704f7fff811e072e5c36f0b-rb1920x980.jpeg" target="_blank">
+                    <img src="https://gedcdn.gdeetotdom.ru/b/3d71c39b3704f7fff811e072e5c36f0b-rb1920x980.jpeg" alt="Квартира 1">
+                </a>
+                <h3>Квартира 1</h3>
+                <div class="price">5900 рублей за ночь</div>
+                <div class="description">Дорогой гость! Предлагаем Вашему вниманию апартамент в ЖК Версаль - это самая лучшая локация в городе Сочи, так как комплекс находится около морпорта, с шикарным видом на яхты. Вокруг много кафе и ресторанов, магазинов. В квартире есть все необходимое для вашего отдыха холодильник, стиральная машина, варочная панель, телевизор, wi-fi, кабельное телевидение, СВЧ-печь, электрочайник, посудомоечная машина, кофемашина, утюг, гладильная доска, сушилка, фен, шкаф для одежды, обеденный стол + стулья, посуда, постельное белье, комплект полотенец по количеству гостей.
+
+                    Дополнительно оплачивается:
+                    Залог (возвратный) за сохранность имущества в размере 5000₽. Возвращается в день выезда после приемки квартиры.
+                    Финальная уборка(клининг) в размере 2500₽</div>
+                <div class="address">Адрес: ул. Ленина, д. 10</div>
+                <a href="#" class="book-button">Забронировать</a>
+            </div>
+            <div class="apartment" data-address="ул. Пушкина, д. 20" data-availability='["2023-10-05", "2023-10-15"]'>
+                <a href="https://idei.club/uploads/posts/2021-10/1633363443_53-idei-club-p-kvartira-s-remontom-i-mebelyu-interer-kras-54.jpg" target="_blank">
+                    <img src="https://idei.club/uploads/posts/2021-10/1633363443_53-idei-club-p-kvartira-s-remontom-i-mebelyu-interer-kras-54.jpg" alt="Квартира 2">
+                </a>
+                <h3>Квартира 2</h3>
+                <div class="price">6300 рублей за ночь</div>
+                <div class="description">Отличная Евродвушка 60 кв.м в жилом комплексе бизнес класса "Golden Residence". Полностью оснащена мебелью и техникой (телевизор SmartTV, Wi-Fi, посудомоечная машина, холодильник, чайник, микроволновая печь, стиральная машина).
+                    Отличная дорогая мебель. Кровать и раскладывающийся диван
+                    До центра Сочи (Мор. порта) 30 мин на автомобиле.
+                    До центра Адлера (Олимп парка) 15 мин на автомобиле.
+                    Море в 300 м от дома (3 минут прогулочным шагом).
+                    
+                    Дополнительно оплачивается:
+                    Залог (возвратный) за сохранность имущества в размере 5000₽. Возвращается в день выезда после приемки квартиры.
+                    Финальная уборка(клининг) в размере 3000₽</div>
+                <div class="address">Адрес: ул. Пушкина, д. 20</div>
+                <a href="#" class="book-button">Забронировать</a>
+            </div>
+            <div class="apartment" data-address="ул. Карла Маркса, д. 30" data-availability='["2023-10-01", "2023-10-20"]'>
+                <a href="https://cdn-p.cian.site/images/07/376/421/posutochnaja-kvartira-yalta-karla-marksa-ulica-1246737030-1.jpg" target="_blank">
+                    <img src="https://cdn-p.cian.site/images/07/376/421/posutochnaja-kvartira-yalta-karla-marksa-ulica-1246737030-1.jpg" alt="Квартира 3">
+                </a>
+                <h3>Квартира 3</h3>
+                <div class="price">10000 рублей за ночь</div>
+                <div class="description">Представляем вам современную 2-комнатную квартиру бизнес-класса в жилом комплексе "Столичный" в живописном городе Адлер. Эта уютная квартира с видом на море идеально подходит для семьи из 4 человек. Расположенная всего в 5 минутах ходьбы до моря, она предлагает комфорт и удобства для отдыхающих. В квартире есть все необходимое для комфортного проживания, что делает ее идеальным выбором для тех, кто ценит уют и современные удобства. Приглашаем вас насладиться прекрасным видом на море и провести незабываемое время в этом прекрасном месте.
+
+                    Дополнительно оплачивается финальная уборка: 3000 рублей
+                    
+                    Залог (возвратный): 5000 рублей возвращается в день выезда.</div>
+                <div class="address">Адрес: ул. Карла Маркса, д. 30</div>
+                <a href="#" class="book-button">Забронировать</a>
+            </div>
+        </div>
+
+        <div id="about">
+            <h3>О нас</h3>
+            <p>Наша компания предлагает комфортабельные апартаменты для краткосрочной аренды!
+
+                Идея нашей компании – это качественный сервис и хорошие локации, красота и эстетика апартаментов, честное и профессиональное отношение к окружающим.
+                
+                Качество сервиса - это автоматизация основных процессов работы и отлаженная система внутри коллектива.
+                
+                Эстетика - это когда гость чувствует себя в наших апартаментах комфортно и уютно как дома. Нам нравится радовать наших гостей своей идеальной чистотой и вкусом выбранного апартамента.
+                
+                Честность – это когда дело выбрано по душе, мы делаем всё добросовестно и с удовольствием, гости остаются довольны и нам доверяют.
+                
+                И как результат гости становятся сначала постоянными клиентами, а потом становятся друзьями компании.</p>
+        </div>
+
+        <div id="contact">
+            <h3>Контакты</h3>
+            <p>Email: info@example.com</p>
+            <p>Телефон: +7 (123) 456-7890</p>
+        </div>
+
+        <div id="map-container">
+            <h3>Карта города Красноярск</h3>
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('search-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const checkIn = new Date(event.target.check_in.value);
+            const checkOut = new Date(event.target.check_out.value);
+            const address = event.target.address.value.toLowerCase();
+
+            const apartments = document.querySelectorAll('.apartment');
+            apartments.forEach(apartment => {
+                const apartmentAddress = apartment.getAttribute('data-address').toLowerCase();
+                const availability = JSON.parse(apartment.getAttribute('data-availability'));
+
+                const isAddressMatch = apartmentAddress.includes(address);
+                const isAvailable = availability.some(dateRange => {
+                    const [start, end] = dateRange.split(',').map(date => new Date(date));
+                    return checkIn >= start && checkOut <= end;
+                });
+
+                if (isAddressMatch && isAvailable) {
+                    apartment.style.display = 'flex';
+                } else {
+                    apartment.style.display = 'none';
+                }
+            });
+        });
+
+        function initMap() {
+            var krasnoyarsk = { lat: 56.008764, lng: 92.868094 };
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 12,
+                center: krasnoyarsk
+            });
+            var marker = new google.maps.Marker({
+                position: krasnoyarsk,
+                map: map
+            });
+        }
+    </script>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"></script>
+</body>
+</html>
