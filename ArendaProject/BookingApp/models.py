@@ -7,14 +7,14 @@ class Property(models.Model):
     address = models.CharField(max_length=255)
     description = models.TextField()
     price_per_night = models.DecimalField(max_digits=10, decimal_places=2)
-    image_url = models.URLField(blank=True, null=True)  # Поле для URL изображения (необязательное)
+    image = models.ImageField(upload_to='property_images/', null=True, blank=True)
 
-    def __str__(self):
-        return self.name
-    
     class Meta:
         verbose_name = 'Property'
         verbose_name_plural = 'Properties'
+
+    def __str__(self):
+        return self.name
 
 # Модель бронирования
 class Booking(models.Model):
@@ -42,3 +42,29 @@ class Booking(models.Model):
 
     def __str__(self):
         return f"Booking #{self.id} - {self.user.username}"
+
+# Оценка жилплощади
+class Review(models.Model):
+    RATING_CHOICES = [
+        (1, '1'),
+        (2, '2'),
+        (3, '3'),
+        (4, '4'),
+        (5, '5'),
+    ]
+
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    property = models.ForeignKey(Property, on_delete=models.CASCADE)
+    rating = models.IntegerField(choices=RATING_CHOICES)
+    description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Review'
+        verbose_name_plural = 'Reviews'
+        ordering = ['-created_at']
+        unique_together = ('author', 'property')
+
+    def __str__(self):
+        return f"Review by {self.author.username} for {self.property.name}"

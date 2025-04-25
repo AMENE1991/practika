@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Property Detail</title>
+</head>
+<body>
+    <h2>{{ property.name }}</h2>
+    <p>{{ property.address }}</p>
+    <p>{{ property.description }}</p>
+    <p>Price per night: ${{ property.price_per_night }}</p>
+    <p><img src={{ property.image_url }} style="height:200px; width:200px;"/></p>
+    <a href="{% url 'rate_property' property_id=property.id %}">Rate this property</a>
+</body>
+</html>
