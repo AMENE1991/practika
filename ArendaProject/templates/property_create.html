@@ -1,0 +1,16 @@
+﻿<!-- property_form.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Создать жилплощадь</title>
+</head>
+<body>
+    <h1>Создать жилплощадь</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Сохранить</button>
+    </form>
+    <a href="{% url 'property_list' %}">Отмена</a>
+</body>
+</html>

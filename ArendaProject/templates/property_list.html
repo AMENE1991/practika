@@ -1,0 +1,40 @@
+﻿{% load static %}
+<!DOCTYPE html>
+   <html>
+   <head>
+       <title>Список жилплощади</title>
+       {% load static %}
+       <style>
+           .property-item {
+               display: flex;
+               align-items: center;
+               margin-bottom: 20px;
+           }
+           .property-item img {
+               width: 100px;
+               height: 100px;
+               margin-right: 20px;
+           }
+       </style>
+   </head>
+   <body>
+       <h1>Список жилплощади</h1>
+       <p><a href="{% url 'main' %}" class="button">Главная</a></p>
+       <p><a href="{% url 'property_create' %}" class="button">Создать новую жилплощадь</a></p>
+       <div>
+           {% for property in properties %}
+               <div class="property-item">
+                   {% if property.image %}
+                       <img src="{{ property.image.url }}" alt="{{ property.name }}">
+                   {% else %}
+                       <img src="{% static 'default-image-icon.png' %}" alt="Default Image">
+                   {% endif %}
+                   <div>
+                       <h2><a href="{% url 'property_detail' property.id %}">{{ property.name }}</a></h2>
+                       <p>{{ property.address }}</p>
+                   </div>
+               </div>
+           {% endfor %}
+       </div>
+   </body>
+   </html>

@@ -1,0 +1,17 @@
+﻿<!-- booking_form.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Создать бронирование</title>
+    
+</head>
+<body>
+    <h1>Создать бронирование</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Забронировать</button>
+    </form>
+    <a href="{% url 'property_detail' property_id %}">Отмена</a>
+</body>
+</html>

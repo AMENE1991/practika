@@ -1,0 +1,55 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .property-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .property-item img {
+            width: 100px;
+            height: 100px;
+            margin-right: 20px;
+        }
+    </style>
+</head>
+<body>
+    {% if user.is_authenticated %}
+        <h2>Личный кабинет, {{ user.username }}!</h2>
+        <p><a href="{% url 'property_list' %}">Жилплощади</a></p>
+        <p><a href="{% url 'main' %}">Главная</a></p>
+        <form action="{% url 'logout' %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+
+        <h3>Ваши объекты недвижимости:</h3>
+        <ul>
+            {% for property in user_properties %}
+            <div class="property-item">
+                {% if property.image %}
+                    <img src="{{ property.image.url }}" alt="{{ property.name }}">
+                {% else %}
+                    <img src="{% static 'default-image-icon.png' %}" alt="Default Image">
+                {% endif %}
+                <div>
+                    <h2><a href="{% url 'property_detail' property.id %}">{{ property.name }}</a></h2>
+                    <p>{{ property.address }}</p>
+                </div>
+            </div>
+            {% empty %}
+                <li>Вы еще не создали ни одного объекта недвижимости.</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <h2>Добро пожаловать, гость!</h2>
+        <p><a href="{% url 'login' %}">Login</a></p>
+        <p><a href="{% url 'signup' %}">Sign Up</a></p>
+    {% endif %}
+</body>
+</html>

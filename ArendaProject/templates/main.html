@@ -8,6 +8,8 @@
 <body>
     {% if user.is_authenticated %}
         <h2>Добро пожаловать, {{ user_name }}!</h2>
+        <p><a href="{% url 'property_list' %}">Жилплощади</a></p>
+        <p><a href="{% url 'profile' %}">Личный кабинет</a></p>
         <form action="{% url 'logout' %}" method="post" style="display:inline;">
             {% csrf_token %}
             <button type="submit">Logout</button>

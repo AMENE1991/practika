@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Описание жилплощади</title>
+</head>
+<body>
+    <h1>{{ property.name }}</h1>
+    <p><strong>Адрес:</strong> {{ property.address }}</p>
+    <p><strong>Описание:</strong> {{ property.description }}</p>
+    <p><strong>Цена за ночь:</strong> {{ property.price_per_night }}</p>
+    {% if property.image %}
+        <img src="{{ property.image.url }}" alt="{{ property.name }}">
+    {% endif %}
+
+    {% if user.is_authenticated and user != property.creator %}
+    <p><a href="{% url 'booking_create' property.pk %}" class="button">Забронировать</a></p>
+    {% elif user.is_authenticated and user == property.creator %}
+    {% else %}
+        <p>Пожалуйста, <a href="{% url 'login' %}">войдите</a>, чтобы забронировать.</p>
+    {% endif %}
+
+    {% if user == property.creator or user.is_staff %}
+        <a href="{% url 'property_delete' property.pk %}" class="button">Удалить</a>
+    {% endif %}
+
+    {% if property.booking_set.exists %}
+        <p><strong>Забронировано до:</strong> {{ property.booking_set.last.check_out_date }}</p>
+    {% endif %}
+</body>
+</html>
