@@ -2,6 +2,13 @@
 <html>
 <head>
     <title>Описание жилплощади</title>
+    <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=afc60c17-8917-4cff-a2f1-30ac8ce52b4f" type="text/javascript"></script>
+    <style>
+        #map {
+            width: 100%;
+            height: 400px;
+        }
+    </style>
 </head>
 <body>
     <h1>{{ property.name }}</h1>
@@ -11,6 +18,8 @@
     {% if property.image %}
         <img src="{{ property.image.url }}" alt="{{ property.name }}">
     {% endif %}
+
+    <div id="map"></div>
 
     {% if user.is_authenticated and user != property.creator %}
     <p><a href="{% url 'booking_create' property.pk %}" class="button">Забронировать</a></p>
@@ -26,5 +35,34 @@
     {% if property.booking_set.exists %}
         <p><strong>Забронировано до:</strong> {{ property.booking_set.last.check_out_date }}</p>
     {% endif %}
+
+    <script type="text/javascript">
+        ymaps.ready(init);
+        function init(){
+            var address = '{{ property.address }}';
+
+            ymaps.geocode(address, {
+                results: 1
+            }).then(function (res) {
+                var firstGeoObject = res.geoObjects.get(0);
+                var coords = firstGeoObject.geometry.getCoordinates();
+                var bounds = firstGeoObject.properties.get('boundedBy');
+
+                var myMap = new ymaps.Map('map', {
+                    center: coords,
+                    zoom: 10
+                });
+
+                var myPlacemark = new ymaps.Placemark(coords, {
+                    balloonContent: address
+                });
+
+                myMap.geoObjects.add(myPlacemark);
+                myMap.setBounds(bounds, {
+                    checkZoomRange: true
+                });
+            });
+        }
+    </script>
 </body>
 </html>
